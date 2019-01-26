@@ -1,9 +1,12 @@
+<!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="CSS/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-		<style>#admin,#exist { display: none; }</style>
+ <!-- <style>#admin,#exist { display: none; }</style> -->
+		
 
 		<script>
 			let selected = 0;
@@ -37,6 +40,24 @@
 
 							$('#notexist').css('display', 'none')
 							$('#exist').css('display', 'block')
+                        })
+                        // commands list
+                        $('#listcmd').empty()
+						for(let i in event.data.commands){
+							let command = event.data.commands[i];
+							$('#listcmd').append('<div class="command" id="command_' + command.id + '">' + command.name + '</div>')
+						}
+						$(".command").click(function(){
+							let id = $(this).attr('id').replace('command_', '')
+							selected = parseInt(id)
+
+							$('.command').removeClass('selected')
+							$(this).addClass('selected')
+
+							$('#exist').find('h1').text(selected + ", " + $(this).text())
+
+							$('#notexist').css('display', 'none')
+							$('#exist').css('display', 'block')
 						})
 					}
 				});
@@ -47,6 +68,7 @@
 				})
 
 				$("#select_users").click(() => {
+                    $('#group').css('display', 'none')
 					$('#server').css('display', 'none')
 					$('#users').css('display', 'block')
 					$(".tab").removeClass("selected")
@@ -55,11 +77,21 @@
 				})
 
 				$("#select_server").click(() => {
+                    $('#group').css('display', 'none')
 					$('#users').css('display', 'none')
 					$('#server').css('display', 'block')
 					$(".tab").removeClass("selected")
 					$("#select_server").addClass("selected")
 					$("#select_server").blur()
+                })
+                
+                $("#select_group").click(() => {
+                    $('#users').css('display', 'none')
+                    $('#server').css('display', 'none')
+                    $('#group').css('display', 'block')
+					$(".tab").removeClass("selected")
+					$("#select_group").addClass("selected")
+					$("#select_group").blur()
 				})
 
 				$("#slay_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slay_all'})); $(this).blur()})
@@ -83,50 +115,69 @@
 
 				$('button').click(function() {$(this).blur()});
 			});
-		</script>
+        </script>
+        <script>
+            /* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+            $(function(){
+                var dropdown = document.getElementsByClassName("dropdown-btn");
+                var i;
+                
+                for (i = 0; i < dropdown.length; i++) {
+                    dropdown[i].addEventListener("click", function() {
+                        console.log('WHY THE FUCK')
+                        this.classList.toggle("active");
+                        var dropdownContent = this.nextElementSibling;
+                        if (dropdownContent.style.display === "block") {
+                            dropdownContent.style.display = "none";
+                        } else {
+                            dropdownContent.style.display = "block";
+                        }
+                    });
+                }
+            });    
+        </script>
 	</head>
 	<body>
 		<div id="admin">
 			<div class="topbar">
-				<p>es_admin</p>
+				<p>Royal Admin Control</p>
 				<div id="close">&#10060;</div>
 			</div>
 
 			<div id="tabs">
 				<button id="select_users" class="tab selected">Users</button>
-				<button id="select_server" class="tab">Server</button>
+                <button id="select_group" class="tab">Group</button>
+                <button id="select_server" class="tab">Server</button>
+
 			</div>
 
 			<div id="main">
 				<div id="users">
-					<div id="list">
+					<div id="listcmd" class="list">
+                        <div class="sidenav">
+                            <button class="dropdown-btn">Dropdown 
+                                <i class="fa fa-caret-down"></i>
+                            </button>
+                            <div class="dropdown-container">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </div>    
 					</div>
 					<div id="selected">
 						<div id="notexist">
-							<h1>Select a player</h1>
+							<h1>Select a Command</h1>
 						</div>
 						<div id="exist">
 							<h1>Kanersps</h1>
 							<div id="quick">
                                 <h3>Quick Options</h3>
                                 <!-- Class: .name { display: none; } | ID: #name { display: none; } -->
-								<button class="quick" id="slay">Slay</button>
-								<button class="quick" id="kick">Kick</button>
-								<button class="quick" id="noclip">Noclip</button>
-								<button class="quick" id="freeze">Freeze</button>
-								<button class="quick" id="bring">Bring</button>
-								<button class="quick" id="goto">Goto</button>
-								<button class="quick" id="slap">Slap</button>
-								<button class="quick" id="crash">Crash</button>
-								<button class="quick" id="ban">Ban</button>
+								
 							</div>
 							<div id="set">
 								<h3>Attributes</h3>
-								<div class="group_set">
-									<label>Group</label>
-									<input id="newgroup" type="text" placeholder="new group"></input>
-									<button id="setgroup">Set</button>
-								</div>
 								<div class="group_set">
 									<label>Permission Level</label>
 									<input id="newlevel" type="text" placeholder="new level"></input>
@@ -151,6 +202,15 @@
 					<button class="quick" id="slay_all">Slay</button>
 					<button class="quick" id="bring_all">Bring</button>
 					<button class="quick" id="slap_all">Slap</button>
+                </div>
+                <div id="group">
+                    <h3>Groups</h3>
+                    <div class="group_set">
+                        <label>Group</label>
+                        <input id="newgroup" type="text" placeholder="new group"></input>
+                        <button id="setgroup">Set</button>
+                    </div>
+					
 				</div>
 			</div>
 		</div>
