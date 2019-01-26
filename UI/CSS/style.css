@@ -4,7 +4,7 @@ body, html {
 	overflow-y: hidden;
 }
 
-#admin {
+.ui {
 	font-family: 'Roboto', sans-serif;
 	height: 700px;
 	background: #333333;
@@ -189,10 +189,27 @@ body, html {
   cursor: pointer;
   outline: none;
 }
+.sidenav button {
+	padding: 6px 8px 6px 16px;
+	text-decoration: none;
+	font-size: 20px;
+	color: #b3b0b0;
+	display: block;
+	border: none;
+	background: none;
+	width: 100%;
+	text-align: left;
+	cursor: pointer;
+	outline: none;
+  }
 
 /* On mouse-over */
 .sidenav a:hover, .dropdown-btn:hover {
   color: #f1f1f1;
+}
+
+.sidenav button:hover {
+	color: #f1f1f1;
 }
 
 /* Main content */

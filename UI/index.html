@@ -65,35 +65,103 @@
 				$("#close").click(() => {
 					$("#admin").css('display', 'none')
 					$.post('http://es_admin2/close', JSON.stringify({}));
-				})
+				});
 
-				$("#select_users").click(() => {
-                    $('#group').css('display', 'none')
-					$('#server').css('display', 'none')
-					$('#users').css('display', 'block')
-					$(".tab").removeClass("selected")
-					$("#select_users").addClass("selected")
-					$("#select_users").blur()
-				})
+				var lastTabUsed = null;
+				function createTab(id, name) 
+				{
+					var btn = document.createElement('button');
+					btn.id = id;
+					btn.innerHTML = name;
+					$(btn).addClass("tab");
+					var tabsLoaded = $('#tabs').children.length
+					if (tabsLoaded == 0)
+					{
+						$(btn).addClass('selected');
+					}
+					$("#tabs").append(btn);
 
-				$("#select_server").click(() => {
-                    $('#group').css('display', 'none')
-					$('#users').css('display', 'none')
-					$('#server').css('display', 'block')
-					$(".tab").removeClass("selected")
-					$("#select_server").addClass("selected")
-					$("#select_server").blur()
-                })
-                
-                $("#select_group").click(() => {
-                    $('#users').css('display', 'none')
-                    $('#server').css('display', 'none')
-                    $('#group').css('display', 'block')
-					$(".tab").removeClass("selected")
-					$("#select_group").addClass("selected")
-					$("#select_group").blur()
-				})
+					var div = $("#" + id + "-content");
+					div.css("display", "none");
+					$(btn).click(() => {
+						div.css('display', 'block');
 
+						$(btn).addClass("selected");
+						$(btn).blur();
+						if (lastTabUsed != null && $(lastTabUsed).attr('id') != $(btn).attr('id'))
+						{
+							var lastDiv = $('#' + $(lastTabUsed).attr('id') + "-content");
+							lastDiv.css('display', 'none');
+							console.log(lastDiv);
+							$(lastTabUsed).removeClass("selected");
+						}
+						lastTabUsed = $(btn);
+					});
+				};
+
+				function createSideBarParent(id, name, target)
+				{
+					var btn = document.createElement('button');
+					btn.id = id;
+					btn.innerHTML = name;
+					$(btn).addClass('dropdown-btn');
+
+					var caret = document.createElement('i');
+					$(caret).addClass('fa');
+					$(caret).addClass('fa-caret-down');
+					$(btn).append(caret);
+
+					$(target).append(btn);
+
+					var content = document.createElement('div');
+					$(content).addClass("dropdown-content");
+					$(target).append(content);
+
+					return $(content);
+				};
+				var lastSideBarBtn = null;
+				function createSidebarPageBtn(id, name, content)
+				{
+					console.log(content);
+					var btn = document.createElement('button');
+					//$(btn).addClass('tab');
+					btn.id = id;
+					btn.innerHTML = name;
+
+					$(content).append(btn);
+
+					var div = $("#" + id + "-cmd-content");
+					div.css("display", "none");
+					$(btn).click(() => {
+						div.css('display', 'block');
+
+						$(btn).addClass("selected");
+						$(btn).blur();
+						if (lastSideBarBtn != null && $(lastSideBarBtn).attr('id') != $(btn).attr('id'))
+						{
+							var lastDiv = $('#' + $(lastSideBarBtn).attr('id') + "-cmd-content");
+							lastDiv.css('display', 'none');
+							$(lastSideBarBtn).removeClass("selected");
+						}
+						lastSideBarBtn = $(btn);
+					});
+				};
+
+				createTab("commands", "Commands");
+				createTab("groups", "Groups");
+				createTab("server", "Server");
+				
+				var cmdlist = $('#listcmd');
+
+				var admin = createSideBarParent("admin", "Admin", cmdlist);
+				createSidebarPageBtn('kick', "kick", admin);
+				createSidebarPageBtn('ban', "ban", admin);
+
+				var teleportation = createSideBarParent("teleportation", "Teleportation", cmdlist);
+				createSidebarPageBtn('goto', "goto", teleportation);
+				createSidebarPageBtn('bring', "bring", teleportation);
+
+				/*
 				$("#slay_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slay_all'})); $(this).blur()})
 				$("#bring_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'bring_all'})); $(this).blur()})
 				$("#slap_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slap_all'})); $(this).blur()})
@@ -112,7 +180,7 @@
 				$("#setlevel").click(function() {$.post('http://es_admin2/set', JSON.stringify({user: selected, type: 'level', param: $("#newlevel").val()})); $(this).blur()})
 				$("#setmoney").click(function() {$.post('http://es_admin2/set', JSON.stringify({user: selected, type: 'money', param: $("#newmoney").val()})); $(this).blur()})
 				$("#setbank").click(function() {$.post('http://es_admin2/set', JSON.stringify({user: selected, type: 'bank', param: $("#newbank").val()})); $(this).blur()})
-
+				*/
 				$('button').click(function() {$(this).blur()});
 			});
         </script>
@@ -124,7 +192,6 @@
                 
                 for (i = 0; i < dropdown.length; i++) {
                     dropdown[i].addEventListener("click", function() {
-                        console.log('WHY THE FUCK')
                         this.classList.toggle("active");
                         var dropdownContent = this.nextElementSibling;
                         if (dropdownContent.style.display === "block") {
@@ -138,79 +205,48 @@
         </script>
 	</head>
 	<body>
-		<div id="admin">
+		<div class="ui">
 			<div class="topbar">
 				<p>Royal Admin Control</p>
 				<div id="close">&#10060;</div>
 			</div>
 
 			<div id="tabs">
-				<button id="select_users" class="tab selected">Users</button>
-                <button id="select_group" class="tab">Group</button>
-                <button id="select_server" class="tab">Server</button>
-
 			</div>
 
 			<div id="main">
-				<div id="users">
-					<div id="listcmd" class="list">
-                        <div class="sidenav">
-                            <button class="dropdown-btn">Dropdown 
-                                <i class="fa fa-caret-down"></i>
-                            </button>
-                            <div class="dropdown-container">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
-                            </div>
-                        </div>    
-					</div>
-					<div id="selected">
-						<div id="notexist">
-							<h1>Select a Command</h1>
+				<div id="commands-content">
+					<div style="float: left;">
+						<div class="list">
+							<div class="sidenav" id='listcmd'>
+							</div>    
 						</div>
-						<div id="exist">
-							<h1>Kanersps</h1>
-							<div id="quick">
-                                <h3>Quick Options</h3>
-                                <!-- Class: .name { display: none; } | ID: #name { display: none; } -->
-								
-							</div>
-							<div id="set">
-								<h3>Attributes</h3>
-								<div class="group_set">
-									<label>Permission Level</label>
-									<input id="newlevel" type="text" placeholder="new level"></input>
-									<button id="setlevel">Set</button>
-								</div>
-								<div class="group_set">
-									<label>Money</label>
-									<input id="newmoney" type="text" placeholder="new money"></input>
-									<button id="setmoney">Set</button>
-								</div>
-								<div class="group_set">
-									<label>Bank</label>
-									<input id="newbank" type="text" placeholder="new bank"></input>
-									<button id="setbank">Set</button>
-								</div>
-							</div>
+					</div>
+					<div>
+						<div id="goto-cmd-content">
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultricies, massa eu consequat maximus, neque elit euismod enim, in rhoncus ante mauris ac felis. Sed vitae leo justo. Proin ullamcorper sapien eget sodales viverra. Nunc molestie mollis erat ut pretium. Cras ut est dictum, suscipit ipsum ac, tempor magna. Vestibulum interdum, orci vel dictum consectetur, diam enim porttitor erat, porttitor sollicitudin neque dui non leo. Pellentesque maximus venenatis fermentum. Quisque quis iaculis orci. Curabitur consectetur, lacus id convallis molestie, turpis mauris mollis enim, at sagittis nunc urna eu nulla. Sed rhoncus ante ac est blandit, in maximus ipsum vulputate. Donec lectus lectus, suscipit sit amet neque a, tristique viverra mauris. Duis mattis laoreet ex, at dapibus dui pharetra tempus. Sed at est in sem volutpat auctor.
+
+							Integer tempor faucibus rutrum. Fusce id aliquam magna, vitae facilisis nunc. Etiam porttitor aliquam turpis a pharetra. Maecenas vestibulum ut quam sit amet condimentum. Nulla commodo aliquet odio, mollis tincidunt sapien dapibus ut. Ut sodales felis nisl, vitae porttitor mauris aliquam eu. Curabitur porttitor risus vitae sem venenatis dictum.
+							
+							Aliquam erat volutpat. Proin vestibulum neque vitae orci egestas, sed iaculis ipsum luctus. Aliquam dignissim metus nec congue fermentum. Mauris mattis ullamcorper tristique. Nulla molestie libero a augue venenatis, nec posuere dui ornare. Vestibulum lacus nunc, hendrerit eu volutpat quis, faucibus quis mauris. Mauris consectetur justo tortor. Duis tempor sodales sem, eu elementum enim. Quisque porta commodo massa non fermentum.
+							
+							Maecenas in dui felis. Aliquam vestibulum nulla at erat pharetra viverra. Sed at porta augue. In volutpat et neque at laoreet. Maecenas urna odio, lacinia eu mi ac, fringilla molestie urna. Integer tincidunt porttitor enim et condimentum. In dapibus, quam id efficitur mollis, nibh enim ultrices velit, eu dignissim risus nunc vel turpis. Mauris augue libero, euismod vitae scelerisque sit amet, elementum sed tortor. Mauris at massa convallis, condimentum orci eget, euismod sem.
+							
+							In ac auctor odio. Suspendisse sed molestie leo, ut pretium eros. In dapibus vel nisi eu consequat. Curabitur justo mauris, sollicitudin id ex eget, blandit dapibus quam. Vivamus accumsan, orci nec tincidunt commodo, purus nulla dictum mi, at imperdiet mauris urna ac ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin nulla ex, varius vel nisi eget, lacinia gravida turpis. Fusce vel lorem eu nibh euismod condimentum. Nam congue urna massa, ut convallis odio tincidunt in. Nam tristique tellus at metus congue laoreet. Maecenas semper ante et massa lacinia, non iaculis magna dignissim. Integer vel vestibulum metus. Praesent tristique purus lobortis, pellentesque est vestibulum, iaculis erat. Nullam at erat purus. Sed scelerisque ante blandit, finibus mauris at, convallis leo. Aenean placerat sed enim at commodo.
 						</div>
 					</div>
 				</div>
-				<div id="server">
-					<h3>Quick Options</h3>
-					<button class="quick" id="slay_all">Slay</button>
-					<button class="quick" id="bring_all">Bring</button>
-					<button class="quick" id="slap_all">Slap</button>
+				<div id="server-content">
+					<h3>Server Options</h3>
                 </div>
-                <div id="group">
-                    <h3>Groups</h3>
+                <div id="groups-content">
+					<h3>Groups</h3>
+					
                     <div class="group_set">
                         <label>Group</label>
-                        <input id="newgroup" type="text" placeholder="new group"></input>
+                        <input id="newgroup" type="text" placeholder="new group"/>
                         <button id="setgroup">Set</button>
                     </div>
-					
 				</div>
 			</div>
 		</div>
