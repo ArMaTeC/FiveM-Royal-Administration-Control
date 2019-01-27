@@ -4,8 +4,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="CSS/style.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
- <!-- <style>#admin,#exist { display: none; }</style> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+        <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
+    <!-- <style>#admin,#exist { display: none; }</style> -->
 		
 
 		<script>
@@ -154,12 +157,19 @@
 				var cmdlist = $('#listcmd');
 
 				var admin = createSideBarParent("admin", "Admin", cmdlist);
-				createSidebarPageBtn('kick', "kick", admin);
-				createSidebarPageBtn('ban', "ban", admin);
+				  createSidebarPageBtn('kick', "Kick", admin);
+          createSidebarPageBtn('ban', "Ban", admin);
+          createSidebarPageBtn('freeze', "Freeze", admin);
+          createSidebarPageBtn('crash', "Crash", admin);
 
 				var teleportation = createSideBarParent("teleportation", "Teleportation", cmdlist);
-				createSidebarPageBtn('goto', "goto", teleportation);
-				createSidebarPageBtn('bring', "bring", teleportation);
+				  createSidebarPageBtn('goto', "goto", teleportation);
+          createSidebarPageBtn('bring', "bring", teleportation);
+                
+        var fun = createSideBarParent("fun", "Fun", cmdlist);
+          createSidebarPageBtn('slap', "Slap", fun);
+          createSidebarPageBtn('slay', "Slay", fun);
+                
 
 				/*
 				$("#slay_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slay_all'})); $(this).blur()})
@@ -203,11 +213,32 @@
                 }
             });    
         </script>
+        <script>
+            /* When the user clicks on the button, 
+            toggle between hiding and showing the dropdown content */
+            function myFunction() {
+              document.getElementById("myDropdown").classList.toggle("show");
+            }
+            
+            // Close the dropdown if the user clicks outside of it
+            window.onclick = function(event) {
+              if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                  var openDropdown = dropdowns[i];
+                  if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                  }
+                }
+              }
+            }
+    	</script>
 	</head>
 	<body>
 		<div class="ui">
 			<div class="topbar">
-				<p>Royal Admin Control</p>
+				<p style="font-family: Brush Script MT, Brush Script Std, cursive;">Royal Admin Control</p>
 				<div id="close">&#10060;</div>
 			</div>
 
@@ -222,19 +253,89 @@
 							</div>    
 						</div>
 					</div>
+				</div>		
+          </div>
+          <div>
+            <div id="kick-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+              <div class="list3">
+                <h3>Input</h3>
+                <form>
+                  Reason:<br>
+                  <br>
+                  <input type="text" name="reason">
+                  <br><br>
+                  <button type="button">Kick!</button>
+                </form>
+              </div>  
+            </div>
+          <div>
+            <div id="ban-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+              <div class="list3">
+				  <br>
+                  <form>
+                    Reason:<br>
+                    <br>
+                    <input type="text" name="reason">
+                    <br><br>
+                    Number:<br>
+                    <br>
+                    <input type="text" name="number">
+                    <br><br>
+                    <form action="/action_page.php">
+						<input type="radio" name="duration" value="Seconds" checked> Seconds<br>
+						<input type="radio" name="duration" value="Minutes"> Minutes<br>
+						<input type="radio" name="duration" value="Hours"> Hours<br>
+						<input type="radio" name="duration" value="Days"> Days<br>
+						<input type="radio" name="duration" value="Months"> Months<br>
+						<input type="radio" name="duration" value="years"> Years<br>
+						<input type="radio" name="duration" value="perma"> Perma<br><br>
+					</form> 
+                    <button type="button">Ban!</button>
+                  </form>
+              </div>  
+            </div>
+          <div>
+            <div id="freeze-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+            </div>
+          <div>
+            <div id="crash-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+            </div>
 					<div>
 						<div id="goto-cmd-content">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultricies, massa eu consequat maximus, neque elit euismod enim, in rhoncus ante mauris ac felis. Sed vitae leo justo. Proin ullamcorper sapien eget sodales viverra. Nunc molestie mollis erat ut pretium. Cras ut est dictum, suscipit ipsum ac, tempor magna. Vestibulum interdum, orci vel dictum consectetur, diam enim porttitor erat, porttitor sollicitudin neque dui non leo. Pellentesque maximus venenatis fermentum. Quisque quis iaculis orci. Curabitur consectetur, lacus id convallis molestie, turpis mauris mollis enim, at sagittis nunc urna eu nulla. Sed rhoncus ante ac est blandit, in maximus ipsum vulputate. Donec lectus lectus, suscipit sit amet neque a, tristique viverra mauris. Duis mattis laoreet ex, at dapibus dui pharetra tempus. Sed at est in sem volutpat auctor.
-
-							Integer tempor faucibus rutrum. Fusce id aliquam magna, vitae facilisis nunc. Etiam porttitor aliquam turpis a pharetra. Maecenas vestibulum ut quam sit amet condimentum. Nulla commodo aliquet odio, mollis tincidunt sapien dapibus ut. Ut sodales felis nisl, vitae porttitor mauris aliquam eu. Curabitur porttitor risus vitae sem venenatis dictum.
-							
-							Aliquam erat volutpat. Proin vestibulum neque vitae orci egestas, sed iaculis ipsum luctus. Aliquam dignissim metus nec congue fermentum. Mauris mattis ullamcorper tristique. Nulla molestie libero a augue venenatis, nec posuere dui ornare. Vestibulum lacus nunc, hendrerit eu volutpat quis, faucibus quis mauris. Mauris consectetur justo tortor. Duis tempor sodales sem, eu elementum enim. Quisque porta commodo massa non fermentum.
-							
-							Maecenas in dui felis. Aliquam vestibulum nulla at erat pharetra viverra. Sed at porta augue. In volutpat et neque at laoreet. Maecenas urna odio, lacinia eu mi ac, fringilla molestie urna. Integer tincidunt porttitor enim et condimentum. In dapibus, quam id efficitur mollis, nibh enim ultrices velit, eu dignissim risus nunc vel turpis. Mauris augue libero, euismod vitae scelerisque sit amet, elementum sed tortor. Mauris at massa convallis, condimentum orci eget, euismod sem.
-							
-							In ac auctor odio. Suspendisse sed molestie leo, ut pretium eros. In dapibus vel nisi eu consequat. Curabitur justo mauris, sollicitudin id ex eget, blandit dapibus quam. Vivamus accumsan, orci nec tincidunt commodo, purus nulla dictum mi, at imperdiet mauris urna ac ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin nulla ex, varius vel nisi eget, lacinia gravida turpis. Fusce vel lorem eu nibh euismod condimentum. Nam congue urna massa, ut convallis odio tincidunt in. Nam tristique tellus at metus congue laoreet. Maecenas semper ante et massa lacinia, non iaculis magna dignissim. Integer vel vestibulum metus. Praesent tristique purus lobortis, pellentesque est vestibulum, iaculis erat. Nullam at erat purus. Sed scelerisque ante blandit, finibus mauris at, convallis leo. Aenean placerat sed enim at commodo.
-						</div>
-					</div>
+                <div class="list2" id='listcmd'>
+                  <h3>Player List</h3>
+						    </div>
+            </div>
+          <div>
+            <div id="bring-cmd-content">
+                <div class="list2" id='listcmd'>
+                  <h3>Player List</h3>
+                </div>
+            </div>
+          <div>
+            <div id="slap-cmd-content">
+                <div class="list2" id='listcmd'>
+                  <h3>Player List</h3>
+                </div>
+            </div>
+          <div>
+            <div id="slay-cmd-content">
+                <div class="list2" >
+                  <h3>Player List</h3>
+                </div>
+            </div>                
 				</div>
 				<div id="server-content">
 					<h3>Server Options</h3>

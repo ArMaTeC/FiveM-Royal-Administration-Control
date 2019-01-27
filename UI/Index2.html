@@ -1,135 +1,355 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-body {
-  font-family: "Lato", sans-serif;
-}
+	<head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="CSS/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+        <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
+    <!-- <style>#admin,#exist { display: none; }</style> -->
+		
 
-/* Fixed sidenav, full height */
-.sidenav {
-  height: 100%;
-  width: 200px;
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  background-color: #111;
-  overflow-x: hidden;
-  padding-top: 20px;
-}
+		<script>
+			let selected = 0;
+			$(function(){
+				$(document).keyup(function(e) {
+					if(e.keyCode == 27){
+						$("#admin").css('display', 'none')
+						$.post('http://es_admin2/close', JSON.stringify({}));
+					}
+				})
+				window.addEventListener('message', function(event) {
+					if(event.data.type == "open"){
+						$('#notexist').css('display', 'block')
+						$('#exist').css('display', 'none')
+						$("#admin").css('display', "block")
+						$('input').val("")
 
-.menu {
-	font-family: 'Roboto', sans-serif;
-	height: 700px;
-	background: #333333;
-	color: white;
-	width: 800px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	margin-top: -350px;
-	margin-left: -400px;
-	padding-bottom: 20px;
-}
+						$('#list').empty()
+						for(let i in event.data.players){
+							let player = event.data.players[i];
+							$('#list').append('<div class="player" id="player_' + player.id + '">' + player.name + '</div>')
+						}
+						$(".player").click(function(){
+							let id = $(this).attr('id').replace('player_', '')
+							selected = parseInt(id)
 
-/* Style the sidenav links and the dropdown button */
-.sidenav a, .dropdown-btn {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 20px;
-  color: #818181;
-  display: block;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  outline: none;
-}
+							$('.player').removeClass('selected')
+							$(this).addClass('selected')
 
-/* On mouse-over */
-.sidenav a:hover, .dropdown-btn:hover {
-  color: #f1f1f1;
-}
+							$('#exist').find('h1').text(selected + ", " + $(this).text())
 
-/* Main content */
-.main {
-  margin-left: 200px; /* Same as the width of the sidenav */
-  font-size: 20px; /* Increased text to enable scrolling */
-  padding: 0px 10px;
-}
+							$('#notexist').css('display', 'none')
+							$('#exist').css('display', 'block')
+                        })
+                        // commands list
+                        $('#listcmd').empty()
+						for(let i in event.data.commands){
+							let command = event.data.commands[i];
+							$('#listcmd').append('<div class="command" id="command_' + command.id + '">' + command.name + '</div>')
+						}
+						$(".command").click(function(){
+							let id = $(this).attr('id').replace('command_', '')
+							selected = parseInt(id)
 
-/* Add an active class to the active dropdown button */
-.active {
-  background-color: green;
-  color: white;
-}
+							$('.command').removeClass('selected')
+							$(this).addClass('selected')
 
-/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
-.dropdown-container {
-  display: none;
-  background-color: #262626;
-  padding-left: 8px;
-}
+							$('#exist').find('h1').text(selected + ", " + $(this).text())
 
-/* Optional: Style the caret down icon */
-.fa-caret-down {
-  float: right;
-  padding-right: 8px;
-}
+							$('#notexist').css('display', 'none')
+							$('#exist').css('display', 'block')
+						})
+					}
+				});
 
-/* Some media queries for responsiveness */
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
-}
-</style>
-</head>
-<body>
-<div class="menu">
-    <div class="sidenav">
-    <a href="#about">About</a>
-    <a href="#services">Services</a>
-    <a href="#clients">Clients</a>
-    <a href="#contact">Contact</a>
-    <button class="dropdown-btn">Dropdown 
-        <i class="fa fa-caret-down"></i>
-    </button>
-    <div class="dropdown-container">
-        <a href="#">Link 1</a>
-        <a href="#">Link 2</a>
-        <a href="#">Link 3</a>
-    </div>
-    <a href="#contact">Search</a>
-    </div>
+				$("#close").click(() => {
+					$("#admin").css('display', 'none')
+					$.post('http://es_admin2/close', JSON.stringify({}));
+				});
 
-    <div class="main">
-    <h2>Sidebar Dropdown</h2>
-    <p>Click on the dropdown button to open the dropdown menu inside the side navigation.</p>
-    <p>This sidebar is of full height (100%) and always shown.</p>
-    <p>Some random text..</p>
-    </div>
-</div>
-<script>
-/* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
-var dropdown = document.getElementsByClassName("dropdown-btn");
-var i;
+				var lastTabUsed = null;
+				function createTab(id, name) 
+				{
+					var btn = document.createElement('button');
+					btn.id = id;
+					btn.innerHTML = name;
+					$(btn).addClass("tab");
+					var tabsLoaded = $('#tabs').children.length
+					if (tabsLoaded == 0)
+					{
+						$(btn).addClass('selected');
+					}
+					$("#tabs").append(btn);
 
-for (i = 0; i < dropdown.length; i++) {
-  dropdown[i].addEventListener("click", function() {
-  this.classList.toggle("active");
-  var dropdownContent = this.nextElementSibling;
-  if (dropdownContent.style.display === "block") {
-  dropdownContent.style.display = "none";
-  } else {
-  dropdownContent.style.display = "block";
-  }
-  });
-}
-</script>
+					var div = $("#" + id + "-content");
+					div.css("display", "none");
+					$(btn).click(() => {
+						div.css('display', 'block');
 
-</body>
-</html> 
+						$(btn).addClass("selected");
+						$(btn).blur();
+						if (lastTabUsed != null && $(lastTabUsed).attr('id') != $(btn).attr('id'))
+						{
+							var lastDiv = $('#' + $(lastTabUsed).attr('id') + "-content");
+							lastDiv.css('display', 'none');
+							console.log(lastDiv);
+							$(lastTabUsed).removeClass("selected");
+						}
+						lastTabUsed = $(btn);
+					});
+				};
+
+				function createSideBarParent(id, name, target)
+				{
+					var btn = document.createElement('button');
+					btn.id = id;
+					btn.innerHTML = name;
+					$(btn).addClass('dropdown-btn');
+
+					var caret = document.createElement('i');
+					$(caret).addClass('fa');
+					$(caret).addClass('fa-caret-down');
+					$(btn).append(caret);
+
+					$(target).append(btn);
+
+					var content = document.createElement('div');
+					$(content).addClass("dropdown-content");
+					$(target).append(content);
+
+					return $(content);
+				};
+				var lastSideBarBtn = null;
+				function createSidebarPageBtn(id, name, content)
+				{
+					console.log(content);
+					var btn = document.createElement('button');
+					//$(btn).addClass('tab');
+					btn.id = id;
+					btn.innerHTML = name;
+
+					$(content).append(btn);
+
+					var div = $("#" + id + "-cmd-content");
+					div.css("display", "none");
+					$(btn).click(() => {
+						div.css('display', 'block');
+
+						$(btn).addClass("selected");
+						$(btn).blur();
+						if (lastSideBarBtn != null && $(lastSideBarBtn).attr('id') != $(btn).attr('id'))
+						{
+							var lastDiv = $('#' + $(lastSideBarBtn).attr('id') + "-cmd-content");
+							lastDiv.css('display', 'none');
+							$(lastSideBarBtn).removeClass("selected");
+						}
+						lastSideBarBtn = $(btn);
+					});
+				};
+
+				createTab("commands", "Commands");
+				createTab("groups", "Groups");
+				createTab("server", "Server");
+				
+				var cmdlist = $('#listcmd');
+
+				var admin = createSideBarParent("admin", "Admin", cmdlist);
+				  createSidebarPageBtn('kick', "Kick", admin);
+          createSidebarPageBtn('ban', "Ban", admin);
+          createSidebarPageBtn('freeze', "Freeze", admin);
+          createSidebarPageBtn('crash', "Crash", admin);
+
+				var teleportation = createSideBarParent("teleportation", "Teleportation", cmdlist);
+				  createSidebarPageBtn('goto', "goto", teleportation);
+          createSidebarPageBtn('bring', "bring", teleportation);
+                
+        var fun = createSideBarParent("fun", "Fun", cmdlist);
+          createSidebarPageBtn('slap', "Slap", fun);
+          createSidebarPageBtn('slay', "Slay", fun);
+                
+
+				/*
+				$("#slay_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slay_all'})); $(this).blur()})
+				$("#bring_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'bring_all'})); $(this).blur()})
+				$("#slap_all").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slap_all'})); $(this).blur()})
+
+
+				$("#slay").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slay'})); $(this).blur()})
+				$("#kick").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'kick'})); $(this).blur()})
+				$("#noclip").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'noclip'})); $(this).blur()})
+				$("#freeze").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'freeze'})); $(this).blur()})
+				$("#bring").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'bring'})); $(this).blur()})
+				$("#goto").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'goto'})); $(this).blur()})
+				$("#slap").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'slap'})); $(this).blur()})
+				$("#crash").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'crash'})); $(this).blur()})
+				$("#ban").click(function() {$.post('http://es_admin2/quick', JSON.stringify({id: selected, type: 'ban'})); $(this).blur()})
+				$("#setgroup").click(function() {$.post('http://es_admin2/set', JSON.stringify({user: selected, type: 'group', param: $("#newgroup").val()})); $(this).blur()})
+				$("#setlevel").click(function() {$.post('http://es_admin2/set', JSON.stringify({user: selected, type: 'level', param: $("#newlevel").val()})); $(this).blur()})
+				$("#setmoney").click(function() {$.post('http://es_admin2/set', JSON.stringify({user: selected, type: 'money', param: $("#newmoney").val()})); $(this).blur()})
+				$("#setbank").click(function() {$.post('http://es_admin2/set', JSON.stringify({user: selected, type: 'bank', param: $("#newbank").val()})); $(this).blur()})
+				*/
+				$('button').click(function() {$(this).blur()});
+			});
+        </script>
+        <script>
+            /* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+            $(function(){
+                var dropdown = document.getElementsByClassName("dropdown-btn");
+                var i;
+                
+                for (i = 0; i < dropdown.length; i++) {
+                    dropdown[i].addEventListener("click", function() {
+                        this.classList.toggle("active");
+                        var dropdownContent = this.nextElementSibling;
+                        if (dropdownContent.style.display === "block") {
+                            dropdownContent.style.display = "none";
+                        } else {
+                            dropdownContent.style.display = "block";
+                        }
+                    });
+                }
+            });    
+        </script>
+        <script>
+            /* When the user clicks on the button, 
+            toggle between hiding and showing the dropdown content */
+            function myFunction() {
+              document.getElementById("myDropdown").classList.toggle("show");
+            }
+            
+            // Close the dropdown if the user clicks outside of it
+            window.onclick = function(event) {
+              if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                  var openDropdown = dropdowns[i];
+                  if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                  }
+                }
+              }
+            }
+    	</script>
+	</head>
+	<body>
+		<div class="ui">
+			<div class="topbar">
+				<p style="font-family: Brush Script MT, Brush Script Std, cursive;">Royal Admin Control</p>
+				<div id="close">&#10060;</div>
+			</div>
+
+			<div id="tabs">
+			</div>
+
+			<div id="main">
+				<div id="commands-content">
+					<div style="float: left;">
+						<div class="list">
+							<div class="sidenav" id='listcmd'>
+							</div>    
+						</div>
+					</div>
+				</div>		
+          </div>
+          <div>
+            <div id="kick-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+              <div class="list3">
+                <h3>Input</h3>
+                <form>
+                  Reason:<br>
+                  <br>
+                  <input type="text" name="reason">
+                  <br><br>
+                  <button type="button">Kick!</button>
+                </form>
+              </div>  
+            </div>
+          <div>
+            <div id="ban-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+              <div class="list3">
+				  <br>
+                  <form>
+                    Reason:<br>
+                    <br>
+                    <input type="text" name="reason">
+                    <br><br>
+                    Number:<br>
+                    <br>
+                    <input type="text" name="number">
+                    <br><br>
+                    <form action="/action_page.php">
+						<input type="radio" name="duration" value="Seconds" checked> Seconds<br>
+						<input type="radio" name="duration" value="Minutes"> Minutes<br>
+						<input type="radio" name="duration" value="Hours"> Hours<br>
+						<input type="radio" name="duration" value="Days"> Days<br>
+						<input type="radio" name="duration" value="Months"> Months<br>
+						<input type="radio" name="duration" value="years"> Years<br>
+						<input type="radio" name="duration" value="perma"> Perma<br><br>
+					</form> 
+                    <button type="button">Ban!</button>
+                  </form>
+              </div>  
+            </div>
+          <div>
+            <div id="freeze-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+            </div>
+          <div>
+            <div id="crash-cmd-content">
+              <div class="list2" id='listcmd'>
+                <h3>Player List</h3>
+              </div>
+            </div>
+					<div>
+						<div id="goto-cmd-content">
+                <div class="list2" id='listcmd'>
+                  <h3>Player List</h3>
+						    </div>
+            </div>
+          <div>
+            <div id="bring-cmd-content">
+                <div class="list2" id='listcmd'>
+                  <h3>Player List</h3>
+                </div>
+            </div>
+          <div>
+            <div id="slap-cmd-content">
+                <div class="list2" id='listcmd'>
+                  <h3>Player List</h3>
+                </div>
+            </div>
+          <div>
+            <div id="slay-cmd-content">
+                <div class="list2" >
+                  <h3>Player List</h3>
+                </div>
+            </div>                
+				</div>
+				<div id="server-content">
+					<h3>Server Options</h3>
+                </div>
+                <div id="groups-content">
+					<h3>Groups</h3>
+					
+                    <div class="group_set">
+                        <label>Group</label>
+                        <input id="newgroup" type="text" placeholder="new group"/>
+                        <button id="setgroup">Set</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
